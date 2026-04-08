@@ -1159,8 +1159,16 @@ body {
   }
 
   .goto-picker {
-    width: 260px;
-    right: -40px;
+    width: 290px;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: pickerSlideInMobile 0.2s ease forwards;
+  }
+
+  @keyframes pickerSlideInMobile {
+    from { opacity: 0; transform: translate(-50%, -8px); }
+    to { opacity: 1; transform: translate(-50%, 0); }
   }
 
   .spiral-binding {
