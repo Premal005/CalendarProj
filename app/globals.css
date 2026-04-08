@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;600&display=swap');
 
 :root {
   /* ===== COLOR SYSTEM ===== */
@@ -49,8 +49,8 @@
   --radius-full: 50%;
 
   /* Typography */
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  --font-heading: 'Plus Jakarta Sans', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
 
   /* Transitions */
@@ -184,6 +184,7 @@ body {
   transform: translateY(-4px);
 }
 
+/* ===== SPIRAL BINDING ===== */
 /* ===== SPIRAL BINDING ===== */
 .spiral-binding {
   display: flex;
