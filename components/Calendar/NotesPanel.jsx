@@ -16,7 +16,15 @@ function NotesPanel({ month, year, rangeStart, rangeEnd }) {
   const [activeTab, setActiveTab] = useState('month'); // 'month' | 'range'
   const [monthText, setMonthText] = useState('');
   const [rangeText, setRangeText] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
   const debounceRef = useRef(null);
+  const saveTimeoutRef = useRef(null);
+
+  const triggerSavePulse = useCallback(() => {
+    setIsSaving(true);
+    if (saveTimeoutRef.current) clearTimeout(saveTimeoutRef.current);
+    saveTimeoutRef.current = setTimeout(() => setIsSaving(false), 1500);
+  }, []);
 
   // Load notes when month changes
   useEffect(() => {
@@ -43,8 +51,9 @@ function NotesPanel({ month, year, rangeStart, rangeEnd }) {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
       setMonthNotes(year, month, text);
-    }, 400);
-  }, [year, month]);
+      triggerSavePulse();
+    }, 600);
+  }, [year, month, triggerSavePulse]);
 
   // Debounced save for range/date notes
   const handleRangeChange = useCallback((e) => {
@@ -57,8 +66,9 @@ function NotesPanel({ month, year, rangeStart, rangeEnd }) {
       } else if (rangeStart) {
         setDateNote(rangeStart.getFullYear(), rangeStart.getMonth(), rangeStart.getDate(), text);
       }
-    }, 400);
-  }, [rangeStart, rangeEnd]);
+      triggerSavePulse();
+    }, 600);
+  }, [rangeStart, rangeEnd, triggerSavePulse]);
 
   const currentText = activeTab === 'month' ? monthText : rangeText;
   const maxChars = 500;
@@ -70,7 +80,20 @@ function NotesPanel({ month, year, rangeStart, rangeEnd }) {
 
   return (
     <div className="notes-panel">
-      <h2 className="notes-title">Notes</h2>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: 'var(--space-sm)', borderBottom: '2px solid var(--text-primary)' }}>
+        <h2 className="notes-title" style={{ paddingBottom: 0, borderBottom: 'none', margin: 0 }}>Notes</h2>
+        <span style={{
+          fontSize: '0.75rem',
+          color: '#10b981', // Tailwind emerald-500
+          fontWeight: 700,
+          opacity: isSaving ? 1 : 0,
+          transform: isSaving ? 'translateY(0)' : 'translateY(4px)',
+          transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
+          pointerEvents: 'none'
+        }}>
+          ✓ Saved
+        </span>
+      </div>
 
       {/* Tab switcher */}
       <div className="notes-tabs">
@@ -115,6 +138,10 @@ function NotesPanel({ month, year, rangeStart, rangeEnd }) {
         disabled={activeTab === 'range' && !hasRange}
         id="notes-textarea"
         aria-label={activeTab === 'month' ? 'Monthly notes' : 'Date range notes'}
+        style={{
+          boxShadow: isSaving ? 'inset 0 0 12px rgba(16, 185, 129, 0.15)' : 'none',
+          transition: 'box-shadow 0.4s ease'
+        }}
       />
 
       {/* Char count */}

@@ -81,6 +81,7 @@ function DateCell({
   if (isEnd && !isOverflow) classes.push('range-end');
   if (inRange && !isOverflow && !isStart && !isEnd) classes.push('in-range');
   if (isHoverPreview && !isStart) classes.push('hover-preview');
+  if (holiday && !isOverflow) classes.push('is-holiday');
 
   return (
     <div
@@ -98,7 +99,9 @@ function DateCell({
       {day}
       {holiday && !isOverflow && (
         <>
-          <span className="holiday-dot" />
+          <svg className="holiday-icon" width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+          </svg>
           <span className="holiday-tooltip">{holiday}</span>
         </>
       )}

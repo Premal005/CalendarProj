@@ -53,9 +53,9 @@ function HeroImage({ month, year, direction }) {
         />
       </div>
 
-      {/* Overlay band with month/year - full width bottom bar instead of wave clip */}
-      <div className="hero-overlay">
-        <div className="hero-overlay-content">
+      {/* Floating glassmorphism date badge */}
+      <div className="hero-tag-container">
+        <div className="hero-tag-glass">
           <span className="hero-year">{year}</span>
           <span className={`hero-month ${isLongName ? 'hero-month-long' : ''}`}>{monthName}</span>
         </div>

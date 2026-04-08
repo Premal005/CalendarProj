@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { getSeasonForMonth, formatDateRange, isSameDay } from '@/lib/calendar';
+import { getSeasonForMonth, formatDateRange, isSameDay, getHoliday } from '@/lib/calendar';
 import { getThemePreference, setThemePreference, getAllDateNotes } from '@/lib/storage';
 
 import SpiralBinding from './SpiralBinding';
@@ -169,6 +169,12 @@ export default function Calendar() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handlePrevMonth, handleNextMonth, handleClearRange, handleToday]);
 
+  const handleMouseMove = useCallback((e) => {
+    const { clientX, clientY } = e;
+    document.documentElement.style.setProperty('--mouse-x', `${clientX}px`);
+    document.documentElement.style.setProperty('--mouse-y', `${clientY}px`);
+  }, []);
+
   const rangeLabel = useMemo(() => {
     return formatDateRange(rangeStart, rangeEnd);
   }, [rangeStart, rangeEnd]);
@@ -179,6 +185,12 @@ export default function Calendar() {
     const diff = Math.abs(rangeEnd.getTime() - rangeStart.getTime());
     return Math.ceil(diff / (1000 * 60 * 60 * 24)) + 1;
   }, [rangeStart, rangeEnd]);
+
+  // Determine if single date clicked has a holiday
+  const selectedHoliday = useMemo(() => {
+    if (!rangeStart) return null;
+    return getHoliday(rangeStart.getMonth(), rangeStart.getDate());
+  }, [rangeStart]);
 
   // Prevent SSR mismatch
   if (!mounted) {
@@ -196,7 +208,7 @@ export default function Calendar() {
       <Confetti active={showConfetti} />
       <ThemeSwitcher theme={theme} onThemeChange={handleThemeChange} />
 
-      <div className="page-wrapper">
+      <div className="page-wrapper" onMouseMove={handleMouseMove}>
         <div className="calendar-outer">
           <div className="calendar-container">
             {/* Spiral binding at top */}
@@ -221,10 +233,31 @@ export default function Calendar() {
 
             {/* Range info bar */}
             {rangeStart && (
-              <div className="range-info-bar">
-                <span>
-                  {rangeLabel}
-                  {dayCount > 0 && ` · ${dayCount} day${dayCount > 1 ? 's' : ''}`}
+              <div className="range-info-bar" style={{ flexWrap: 'wrap', gap: '8px' }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                  <span>
+                    {rangeLabel}
+                    {dayCount > 0 && ` · ${dayCount} day${dayCount > 1 ? 's' : ''}`}
+                  </span>
+                  {selectedHoliday && (!rangeEnd || isSameDay(rangeStart, rangeEnd)) && (
+                    <span className="holiday-info-badge" style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      background: 'rgba(245, 158, 11, 0.15)',
+                      color: 'var(--text-primary)',
+                      padding: '4px 12px',
+                      borderRadius: '16px',
+                      fontSize: '0.72rem',
+                      fontWeight: 700,
+                      border: '1px solid rgba(245, 158, 11, 0.4)'
+                    }}>
+                      <svg width="10" height="10" viewBox="0 0 24 24" fill="#f59e0b" stroke="#f59e0b" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+                      </svg>
+                      {selectedHoliday}
+                    </span>
+                  )}
                 </span>
                 <button className="clear-btn" onClick={handleClearRange} id="clear-selection">
                   Clear

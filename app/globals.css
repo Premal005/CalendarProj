@@ -125,9 +125,31 @@ body {
   position: fixed;
   inset: 0;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(var(--accent-rgb), 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(var(--accent-rgb), 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 50% 80%, rgba(var(--accent-rgb), 0.02) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(var(--accent-rgb), 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 80% 20%, rgba(var(--accent-rgb), 0.12) 0%, transparent 50%),
+    radial-gradient(circle at 50% 80%, rgba(var(--accent-rgb), 0.06) 0%, transparent 60%);
+  background-size: 200% 200%;
+  animation: meshGradient 15s ease infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes meshGradient {
+  0% { background-position: 0% 0%; }
+  50% { background-position: 100% 100%; }
+  100% { background-position: 0% 100%; }
+}
+
+/* Interactive cursor spotlight */
+.page-wrapper::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(var(--accent-rgb), 0.12),
+    transparent 40%
+  );
   pointer-events: none;
   z-index: 0;
 }
@@ -141,16 +163,25 @@ body {
 }
 
 .calendar-container {
-  background: var(--bg-calendar);
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-calendar);
   overflow: hidden;
   position: relative;
-  transition: box-shadow var(--transition-slow);
+  transition: box-shadow var(--transition-slow), transform var(--transition-slow);
+}
+
+[data-theme="dark"] .calendar-container {
+  background: rgba(30, 41, 59, 0.85); /* --bg-calendar for dark mode equivalent */
+  border-color: rgba(255, 255, 255, 0.05);
 }
 
 .calendar-container:hover {
-  box-shadow: 0 30px 90px rgba(0,0,0,0.2), 0 12px 35px rgba(0,0,0,0.12);
+  box-shadow: 0 40px 100px rgba(0,0,0,0.25), 0 15px 40px rgba(0,0,0,0.15);
+  transform: translateY(-4px);
 }
 
 /* ===== SPIRAL BINDING ===== */
@@ -209,7 +240,7 @@ body {
 .hero-image-wrapper {
   position: absolute;
   inset: 0;
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .hero-image-wrapper img {
@@ -217,61 +248,71 @@ body {
   height: 100%;
   object-fit: cover;
   display: block;
+  transform: scale(1.05); /* Initial scale for Ken Burns */
+  animation: kenBurns 15s ease-out forwards;
 }
 
-/* Overlay band at bottom of hero — no clip-path so text is never cut off */
-.hero-overlay {
+@keyframes kenBurns {
+  0% { transform: scale(1.05); }
+  100% { transform: scale(1.15); }
+}
+
+/* Floating glassmorphism tag for date */
+.hero-tag-container {
   position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 2;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
   display: flex;
   justify-content: flex-end;
-  align-items: stretch;
+  pointer-events: none;
 }
 
-/* Decorative angled shape + text container */
-.hero-overlay::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--hero-overlay);
-  clip-path: polygon(0% 100%, 100% 100%, 100% 0%, 40% 0%, 0% 65%);
-}
-
-.hero-overlay-content {
-  position: relative;
-  z-index: 3;
+.hero-tag-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  border-radius: var(--radius-lg);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding: 28px 48px;
-  min-width: 320px;
+  padding: 16px 36px;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: tagFloat 6s ease-in-out infinite;
+}
+
+@keyframes tagFloat {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
 }
 
 .hero-year {
   font-family: var(--font-heading);
-  font-size: 2rem;
-  font-weight: 400;
-  color: rgba(255,255,255,0.9);
-  letter-spacing: 3px;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.95);
+  letter-spacing: 4px;
+  margin-bottom: -4px;
 }
 
 .hero-month {
   font-family: var(--font-heading);
-  font-size: 3rem;
+  font-size: 2.8rem;
   font-weight: 800;
   color: white;
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 5px;
   line-height: 1;
   white-space: nowrap;
 }
 
 .hero-month-long {
-  font-size: 2.4rem;
+  font-size: 2rem;
   letter-spacing: 3px;
 }
 
@@ -799,21 +840,33 @@ body {
   border-radius: 0;
 }
 
-/* Holiday marker */
-.date-cell .holiday-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: #ef4444;
+/* Holiday specific background */
+.date-cell.is-holiday {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.08), rgba(16, 185, 129, 0.08));
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: #b45309;
+  font-weight: 700;
+}
+
+[data-theme="dark"] .date-cell.is-holiday {
+  background: linear-gradient(135deg, rgba(249, 115, 22, 0.15), rgba(16, 185, 129, 0.15));
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
+}
+
+/* Holiday indicator icon */
+.date-cell .holiday-icon {
   position: absolute;
   bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
+  opacity: 0.9;
 }
 
-.date-cell.range-start .holiday-dot,
-.date-cell.range-end .holiday-dot {
-  background: white;
+.date-cell.range-start .holiday-icon,
+.date-cell.range-end .holiday-icon {
+  fill: white;
+  stroke: white;
 }
 
 /* Note indicator */
@@ -834,42 +887,40 @@ body {
 
 /* Holiday tooltip */
 .date-cell .holiday-tooltip {
-  display: none;
+  display: block;
   position: absolute;
   bottom: calc(100% + 8px);
   left: 50%;
-  transform: translateX(-50%);
-  background: var(--text-primary);
-  color: var(--text-inverse);
-  padding: 6px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 0.7rem;
+  transform: translateX(-50%) translateY(4px);
+  opacity: 0;
+  visibility: hidden;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #92400e;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.72rem;
   font-family: var(--font-body);
-  font-weight: 500;
+  font-weight: 600;
   white-space: nowrap;
   z-index: 100;
-  box-shadow: var(--shadow-md);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   pointer-events: none;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.date-cell .holiday-tooltip::after {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: var(--text-primary);
+[data-theme="dark"] .date-cell .holiday-tooltip {
+  background: rgba(15, 23, 42, 0.85);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
 .date-cell:hover .holiday-tooltip {
-  display: block;
-  animation: tooltipFadeIn 0.2s ease;
-}
-
-@keyframes tooltipFadeIn {
-  from { opacity: 0; transform: translateX(-50%) translateY(4px); }
-  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
 }
 
 /* Ripple effect */
@@ -1065,9 +1116,8 @@ body {
     gap: 20px;
   }
 
-  .hero-overlay-content {
-    padding: 20px 32px;
-    min-width: 250px;
+  .hero-tag-glass {
+    padding: 14px 28px;
   }
 
   .goto-label {
@@ -1099,9 +1149,12 @@ body {
     font-size: 1.1rem;
   }
 
-  .hero-overlay-content {
-    padding: 16px 24px;
-    min-width: 180px;
+  .hero-tag-glass {
+    padding: 10px 20px;
+  }
+  .hero-tag-container {
+    top: 16px;
+    right: 16px;
   }
 
   .goto-picker {
@@ -1204,9 +1257,12 @@ body {
     font-size: 0.9rem;
   }
 
-  .hero-overlay-content {
-    padding: 12px 18px;
-    min-width: 140px;
+  .hero-tag-glass {
+    padding: 8px 16px;
+  }
+  .hero-tag-container {
+    top: 12px;
+    right: 12px;
   }
 
   .date-cell {
