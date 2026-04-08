@@ -1179,22 +1179,28 @@ body {
   }
 
   .nav-bar {
-    padding: var(--space-sm) var(--space-md);
-    flex-wrap: wrap;
-    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-sm);
+    flex-direction: column;
+    gap: var(--space-md);
   }
 
   .nav-title {
-    order: -1;
-    min-width: 100%;
+    order: 0;
+    min-width: unset;
     text-align: center;
-    font-size: 1rem;
-    margin-bottom: 4px;
+    font-size: 1.1rem;
+    margin-bottom: 0;
   }
 
   .nav-controls {
-    flex: 1;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .nav-actions {
+    width: 100%;
     justify-content: center;
+    gap: var(--space-md);
   }
 
   .grid-section {
